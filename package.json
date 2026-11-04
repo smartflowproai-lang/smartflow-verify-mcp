@@ -1,0 +1,42 @@
+{
+  "name": "smartflow-verify-mcp",
+  "version": "0.1.2",
+  "description": "MCP server for SmartFlow Observatory, an independent x402 observatory on Base: integrity-sealed decomposition of x402 network growth and self-serve endpoint audits paid over the x402 rail itself.",
+  "type": "module",
+  "bin": {
+    "smartflow-verify-mcp": "src/server.js"
+  },
+  "files": [
+    "src/"
+  ],
+  "scripts": {
+    "start": "node src/server.js",
+    "selftest": "node selftest.js"
+  },
+  "keywords": [
+    "mcp",
+    "modelcontextprotocol",
+    "x402",
+    "base",
+    "usdc",
+    "payments",
+    "verification",
+    "audit",
+    "agent-commerce"
+  ],
+  "author": "Tom Smart",
+  "license": "MIT",
+  "homepage": "https://verify.smartflowproai.com",
+  "repository": {
+    "type": "git",
+    "url": "https://verify.smartflowproai.com"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "zod": "^4.4.3"
+  },
+  "mcpName": "io.github.smartflowproai-lang/verify"
+}
