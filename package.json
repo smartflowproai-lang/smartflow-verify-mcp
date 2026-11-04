@@ -10,8 +10,7 @@
     "src/"
   ],
   "scripts": {
-    "start": "node src/server.js",
-    "selftest": "node selftest.js"
+    "start": "node src/server.js"
   },
   "keywords": [
     "mcp",
@@ -29,7 +28,7 @@
   "homepage": "https://verify.smartflowproai.com",
   "repository": {
     "type": "git",
-    "url": "https://verify.smartflowproai.com"
+    "url": "git+https://github.com/smartflowproai-lang/smartflow-verify-mcp.git"
   },
   "engines": {
     "node": ">=18"
@@ -38,5 +37,8 @@
     "@modelcontextprotocol/sdk": "^1.29.0",
     "zod": "^4.4.3"
   },
-  "mcpName": "io.github.smartflowproai-lang/verify"
+  "mcpName": "io.github.smartflowproai-lang/verify",
+  "bugs": {
+    "url": "https://github.com/smartflowproai-lang/smartflow-verify-mcp/issues"
+  }
 }
