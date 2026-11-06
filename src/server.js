@@ -169,7 +169,7 @@ server.registerTool(
         payment_instructions:
           `Pay EXACTLY ${amountUsdc} USDC on Base (${accept.network}) to ${accept.payTo}. ` +
           `The micro-USDC fraction is unique to this order; do not round or the payment cannot be matched. ` +
-          `Asset (USDC contract): ${accept.asset}. Use the x402 'exact' scheme, or a plain USDC transfer of the exact amount. ` +
+          `Asset (USDC contract): ${accept.asset}. Use the x402 'exact' scheme (verified and settled through the Coinbase facilitator in the same request), or a plain USDC transfer of the exact amount matched by amount. ` +
           `After paying, poll get_audit_order_status with order_id ${order.id || "(see challenge)"}. ` +
           `If nothing is paid, the order expires harmlessly within 24h.`,
         amount_usdc: amountUsdc,
@@ -197,7 +197,7 @@ server.registerTool(
     title: "Check audit order status (free)",
     description:
       "FREE, read-only. Poll the status of an audit order created with order_endpoint_audit. " +
-      "Status `pending_payment` means the exact-amount USDC payment has not been detected yet; `paid: true` confirms your x402 payment was matched; a delivered state means the signed report was emailed. " +
+      "Status `pending_payment` means no payment has been settled or detected yet; `paid: true` confirms your x402 payment was settled through the facilitator or matched by exact amount; a delivered state means the signed report was emailed. " +
       "Caveats: payment detection reads Base USDC transfer logs and can lag a few minutes behind the chain. If you just paid the exact amount, wait 2-5 minutes and poll again before assuming a problem. Unpaid orders expire within 24h.",
     inputSchema: {
       order_id: z

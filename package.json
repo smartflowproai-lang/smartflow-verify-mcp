@@ -1,7 +1,7 @@
 {
   "name": "smartflow-verify-mcp",
-  "version": "0.1.2",
-  "description": "MCP server for SmartFlow Observatory, an independent x402 observatory on Base: integrity-sealed decomposition of x402 network growth and self-serve endpoint audits paid over the x402 rail itself.",
+  "version": "0.1.3",
+  "description": "MCP server for SmartFlow Observatory, an independent x402 observatory on Base: integrity-sealed decomposition of x402 network growth and self-serve endpoint audits paid over x402 (verified and settled through the Coinbase facilitator).",
   "type": "module",
   "bin": {
     "smartflow-verify-mcp": "src/server.js"

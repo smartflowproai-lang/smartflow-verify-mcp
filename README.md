@@ -3,7 +3,7 @@
 MCP server for [SmartFlow Observatory](https://verify.smartflowproai.com), an independent x402 observatory on Base that runs its own ledger of USDC micro-transfers. It gives any MCP-capable agent (Claude Code, Claude Desktop, Cursor, and others) two capabilities:
 
 1. **Read the integrity-sealed decomposition of x402 network growth**: how much of the headline volume is wash or self-dealing activity, how much is ERC-4337 bundler plumbing, and how large the organic core really is. Free.
-2. **Order a $399 signed, human-reviewed audit of any x402 endpoint or receiving wallet**, paid over the x402 rail itself. No human needed on the buying side.
+2. **Order a $399 signed, human-reviewed audit of any x402 endpoint or receiving wallet**, paid over x402: the order is verified and settled through the Coinbase facilitator (positive control: a 0.01 USDC test order settled on 6 Nov 2026, Base tx `0x7c115eb1f7fb56846d41f164d77eda41b58c6201abea710afa0672bcb18cdbe4`). No human needed on the buying side.
 
 The server is a pure HTTP client of the public observatory API. It holds no keys, stores nothing locally, and **never moves funds**. Payment, if you choose to make one, happens entirely outside this server through your own wallet or x402 client.
 
@@ -76,9 +76,9 @@ Input:
 
 - `order_id` (string): the id returned by `order_endpoint_audit`.
 
-Output: order state. `pending_payment` means the exact-amount payment has not been detected yet; `paid: true` confirms the payment was matched; a delivered state means the signed report was emailed.
+Output: order state. `pending_payment` means no payment has been settled or detected yet; `paid: true` confirms the payment was settled through the facilitator or matched by exact amount; a delivered state means the signed report was emailed.
 
-Payment detection reads Base USDC transfer logs and can lag a few minutes behind the chain. If you just paid, wait 2-5 minutes and poll again before assuming a problem.
+A facilitator-settled x402 payment is paid when the order POST returns 200. Plain-transfer detection reads Base USDC transfer logs and can lag a few minutes behind the chain; if you just paid that way, wait 2-5 minutes and poll again before assuming a problem.
 
 ## Free vs paid
 
@@ -93,12 +93,14 @@ Nothing in this package can spend money by itself. A purchase happens only if yo
 ## How the x402 payment flow works
 
 1. `order_endpoint_audit` POSTs to the observatory API. The API answers **HTTP 402 Payment Required** with an x402 v2 challenge envelope. That 402 is the success path for order creation, not an error.
-2. The challenge quotes a **per-order unique amount**: $399 plus a unique micro-USDC fraction, for example `399.002732` USDC. The fraction is how the observatory matches your on-chain payment to your order. **Pay the exact amount; do not round it.**
+2. The challenge quotes a **per-order unique amount**: $399 plus a unique micro-USDC fraction, for example `399.002732` USDC. The fraction ties the payment to your order. **Pay the exact amount; do not round it.**
 3. Pay in either way:
-   - **x402 client**: use the `exact` scheme entry from the `accepts` array (network `eip155:8453`, USDC asset contract, `payTo` address are all in the challenge).
-   - **Plain transfer**: send the exact USDC amount on Base to the `payTo` address from any wallet.
-4. After paying, poll `get_audit_order_status` with your order id. Detection usually completes within minutes.
-5. Once matched, the order flips to paid and the signed audit report is prepared, human-reviewed, and emailed to the address you gave, within 48 business hours of payment.
+   - **x402 client** (the normal path): sign the `exact` scheme entry from the `accepts` array (network `eip155:8453`, USDC asset contract, `payTo` address are all in the challenge) and POST it back with the `PAYMENT-SIGNATURE` header. The API verifies the signed authorization with the Coinbase facilitator and settles it on Base in the same request; a `200` means the payment is settled and the order is paid. The facilitator pays the gas, so the paying wallet needs USDC only.
+   - **Plain transfer** (fallback): send the exact USDC amount on Base to the `payTo` address from any wallet. The observatory matches it to your order by amount from Base USDC transfer logs, usually within minutes.
+4. Poll `get_audit_order_status` with your order id. For a facilitator-settled payment the order is already paid when the POST returns; for a plain transfer, detection can lag a few minutes behind the chain.
+5. Once paid, the signed audit report is prepared, human-reviewed, and emailed to the address you gave, within 48 business hours of payment.
+
+Positive control, so you do not have to take the flow on faith: on 6 Nov 2026 a 0.01 USDC test order was verified and settled through the facilitator, Base tx `0x7c115eb1f7fb56846d41f164d77eda41b58c6201abea710afa0672bcb18cdbe4` (the public price stayed $399; the test amount was enabled for one allow-listed payer and switched off right after). Versions up to 0.1.2 described the audit as paid over x402 while payment was matched by exact-amount transfer only; facilitator verify-and-settle went live on 6 Nov 2026.
 
 Safety rules built into the tool descriptions, worth repeating:
 
